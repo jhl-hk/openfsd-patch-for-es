@@ -48,8 +48,8 @@ int KMPSearch(const std::string& text, const std::string& pattern) {
     return -1;
 }
 
-const string MY_PLUGIN_NAME = "AirAmaz Universal Plugin";
-const string MY_PLUGIN_VERSION = "1.5.2";
+const string MY_PLUGIN_NAME = "Openfsd Patch Plugin";
+const string MY_PLUGIN_VERSION = "1.0.0";
 const string MY_PLUGIN_DEVELOPER = "William He(Misaka)";
 const string MY_PLUGIN_COPYRIGHT = "Copyright (C) 2023-2025";
 
@@ -63,20 +63,20 @@ VATSIMAuthPatch::VATSIMAuthPatch() :
 {
     HMODULE hModule = GetModuleHandle("EuroScope.exe");
     if (hModule == nullptr) {
-        DisplayUserMessage("AirAmaz", "Plugin", "Failed to GetModuleHandle, please contact us for help.", 1, 1, 1, 1, 1);
+        DisplayUserMessage("Openfsd-patch", "Plugin", "Failed to GetModuleHandle, please contact us for help.", 1, 1, 1, 1, 1);
         return ;
     }
 
 
     auto dosHeader  = reinterpret_cast<PIMAGE_DOS_HEADER>(hModule);
     if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-        DisplayUserMessage("AirAmaz", "Plugin", "Invalid DOS header, please contact us for help.", 1, 1, 1, 1, 1);
+        DisplayUserMessage("Openfsd-patch", "Plugin", "Invalid DOS header, please contact us for help.", 1, 1, 1, 1, 1);
         return;
     }
 
     auto ntHeaders = reinterpret_cast<PIMAGE_NT_HEADERS>(reinterpret_cast<BYTE *>(hModule) + dosHeader->e_lfanew);
     if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
-        DisplayUserMessage("AirAmaz", "Plugin", "Invalid PE header, please contact us for help.", 1, 1, 1, 1, 1);
+        DisplayUserMessage("Openfsd-patch", "Plugin", "Invalid PE header, please contact us for help.", 1, 1, 1, 1, 1);
         return;
     }
 
@@ -101,7 +101,7 @@ VATSIMAuthPatch::VATSIMAuthPatch() :
                 strcpy(reinterpret_cast<char *>(reinterpret_cast<uintptr_t>(rdataAddress) + rs), TARGET_JWT_URL);
             }
 
-            DisplayUserMessage("AirAmaz", "Plugin", fmt::format("Found offset at {}", rs).c_str(), 1, 1, 0, 0, 0);
+            DisplayUserMessage("Openfsd-patch", "Plugin", fmt::format("Found offset at {}", rs).c_str(), 1, 1, 0, 0, 0);
 
             VirtualProtect(rdataAddress, rdataSize, oldProtect, &oldProtect);
             return;
