@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Build EuroScope Plugin
 
 on:
   push:
@@ -8,16 +8,31 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
+    
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup vcpkg
+      uses: microsoft/setup-msbuild@v1.1
+      
+    - name: Setup vcpkg and dependencies
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg install fmt:x86-windows
+        
+    - name: Configure CMake
+      run: |
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -A Win32
+        
+    - name: Build
+      run: |
+        cmake --build build --config Release
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: EuroScope-Plugin
+        path: build/Release/*.dll
