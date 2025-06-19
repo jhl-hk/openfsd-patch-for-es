@@ -14,14 +14,27 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup vcpkg
-      uses: microsoft/setup-msbuild@v1.1
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
       
-    - name: Setup vcpkg and dependencies
+    - name: Setup vcpkg
       run: |
         git clone https://github.com/Microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg integrate install
+        
+    - name: Install dependencies
+      run: |
         .\vcpkg\vcpkg install fmt:x86-windows
+        
+    - name: Handle EuroScope Library
+      run: |
+        if (!(Test-Path "EuroScopePlugInDll.lib")) {
+          Write-Host "EuroScopePlugInDll.lib not found - continuing without it"
+          Write-Host "Plugin will compile but may need manual linking"
+        } else {
+          Write-Host "EuroScopePlugInDll.lib found"
+        }
         
     - name: Configure CMake
       run: |
@@ -32,7 +45,16 @@ jobs:
         cmake --build build --config Release
         
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: EuroScope-Plugin
         path: build/Release/*.dll
+        if-no-files-found: warn
+        
+    - name: Upload build logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: build/**/*.log
+        if-no-files-found: ignore
