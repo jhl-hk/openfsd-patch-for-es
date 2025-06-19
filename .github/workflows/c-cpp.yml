@@ -21,11 +21,10 @@ jobs:
       run: |
         git clone https://github.com/Microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg integrate install
         
-    - name: Install dependencies
+    - name: Install dependencies (manifest mode)
       run: |
-        .\vcpkg\vcpkg install fmt:x86-windows
+        .\vcpkg\vcpkg install --triplet=x86-windows
         
     - name: Handle EuroScope Library
       run: |
